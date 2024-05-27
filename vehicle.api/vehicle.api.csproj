@@ -24,7 +24,6 @@
   <ItemGroup>
     <Folder Include="models\dtos\" />
     <Folder Include="validations\" />
-    <Folder Include="services.repo\" />
   </ItemGroup>
 
 </Project>
