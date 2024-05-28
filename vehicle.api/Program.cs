@@ -1,12 +1,19 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using vehicle.api.infrastructure.data;
 using vehicle.api.mappingprofile;
+using vehicle.api.services.repo;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions( x =>
+    {
+        // serialize enums as strings in api responses (e.g. Role)
+        x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    }
+    );
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -19,6 +26,10 @@ builder.Services.AddAutoMapper(typeof(VehicleMappingProfile));
 
 
 // +services dependency injections
+builder.Services.AddScoped<IVehicleMakeService, VehicleMakeService>();
+
+// +cors implementation
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -32,6 +43,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors(x => x
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
 
 app.MapControllers();
 
